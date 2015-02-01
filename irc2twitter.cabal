@@ -22,5 +22,9 @@ executable irc2twitter
   build-depends:       base >=4.6 && <4.7
                      , bytestring
                      , simpleirc
+                     , authenticate-oauth
+                     , text
+                     , twitter-conduit
+                     , http-conduit
   -- hs-source-dirs:      
   default-language:    Haskell2010
