@@ -10,6 +10,9 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.Text as T
 import Web.Authenticate.OAuth as OA
 import Control.Exception
+import System.Process
+import System.Exit
+import System.Environment (getEnvironment)
 
 getOAuthTokens :: IO (OAuth, Credential)
 getOAuthTokens = do
@@ -39,10 +42,17 @@ onMessage server msg
         res <- withManager $ \mgr -> do
             call twInfo mgr $ update $ T.drop 7 (decodeUtf8 text)
         print res
+   | B.pack "%eval" `B.isPrefixOf` mMsg msg = do
+     env <- getEnvironment
+     (status,out,_) <- readProcessWithExitCode "mueval" options ""
+     case status of
+        ExitSuccess -> sendMsg server chan (B.pack out)
+        ExitFailure{} -> return ()
    | otherwise = print msg
    where chan = fromJust $ mChan msg
          nick = fromJust $ mNick msg
          text = mMsg msg
+         options = ["-t","5","--expression", B.unpack $ B.drop 6 text]
 
 events = [(Privmsg onMessage)]
 
