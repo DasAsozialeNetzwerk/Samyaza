@@ -14,6 +14,8 @@ import System.Process
 import System.Exit
 import System.Environment (getEnvironment)
 
+commandPrefix = "%"
+
 getOAuthTokens :: IO (OAuth, Credential)
 getOAuthTokens = do
     let oauth = twitterOAuth
@@ -37,12 +39,12 @@ getTWInfo = do
 
 onMessage :: EventFunc
 onMessage server msg
-   | B.pack "%tweet" `B.isPrefixOf` mMsg msg = do
+   | B.pack (commandPrefix ++ "tweet") `B.isPrefixOf` mMsg msg = do
         twInfo <- getTWInfo
         res <- withManager $ \mgr -> do
             call twInfo mgr $ update $ T.drop 7 (decodeUtf8 text)
         print res
-   | B.pack "%eval" `B.isPrefixOf` mMsg msg = do
+   | B.pack (commandPrefix ++ "eval") `B.isPrefixOf` mMsg msg = do
      env <- getEnvironment
      (status,out,_) <- readProcessWithExitCode "mueval" options ""
      case status of
