@@ -8,7 +8,7 @@ version:             0.1.0.0
 license:             GPL-3
 license-file:        LICENSE
 author:              kohlrabi
-maintainer:          kohlrabi@ilovejesus.net
+maintainer:          kohlrabi@kohlra.biz
 -- copyright:           
 category:            Web
 build-type:          Simple
