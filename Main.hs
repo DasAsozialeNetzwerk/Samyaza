@@ -13,6 +13,7 @@ import Control.Exception
 import System.Process
 import System.Exit
 import System.Environment (getEnvironment)
+import Test.QuickCheck (generate, elements)
 
 commandPrefix = "%"
 
@@ -50,6 +51,9 @@ onMessage server msg
      case status of
         ExitSuccess -> sendMsg server chan (B.pack out)
         ExitFailure{} -> return ()
+   | B.pack (commandPrefix ++ "witzig") `B.isPrefixOf` mMsg msg = do
+     r <- (generate . elements) ["Witzig!", "Nicht Witzig!"]
+     sendMsg server chan r
    | otherwise = print msg
    where chan = fromJust $ mChan msg
          nick = fromJust $ mNick msg
