@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 
 import Data.Maybe
 import Network.SimpleIRC
@@ -29,7 +29,7 @@ getOAuthTokens = do
             ]
     return (oauth, cred)
    where consumerKey = ""
-         consumerSecret = ""
+         consumerSecret  ""
          accessToken = ""
          accessSecret = ""
 
@@ -42,9 +42,10 @@ onMessage :: EventFunc
 onMessage server msg
    | B.pack (commandPrefix ++ "tweet") `B.isPrefixOf` mMsg msg = do
         twInfo <- getTWInfo
-        res <- withManager $ \mgr -> do
-            call twInfo mgr $ update $ T.drop 7 (decodeUtf8 text)
-        print res
+        do res <- try (withManager $ \mgr -> do call twInfo mgr $ update $ T.drop 7 (decodeUtf8 text))
+           case res of
+              Left (e :: TwitterError) -> sendMsg server chan "error"
+              Right status -> sendMsg server chan "success"
    | B.pack (commandPrefix ++ "eval") `B.isPrefixOf` mMsg msg = do
      env <- getEnvironment
      (status,out,_) <- readProcessWithExitCode "mueval" options ""
@@ -64,7 +65,7 @@ events = [(Privmsg onMessage)]
 
 server :: IrcConfig
 server = (mkDefaultConfig "irc.physicsporn.org" "Samyaza")
-         { cChannels = ["#asozialesnetzwerk"]
+         { cChannels = ["#test"]
          , cEvents   = events
          }
 
