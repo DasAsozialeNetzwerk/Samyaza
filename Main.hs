@@ -55,6 +55,9 @@ onMessage server msg
    | B.pack (commandPrefix ++ "witzig") `B.isPrefixOf` mMsg msg = do
      r <- (generate . elements) ["Witzig!", "Nicht Witzig!"]
      sendMsg server chan r
+   | B.pack (commandPrefix ++ "relefant") `B.isPrefixOf` mMsg msg = do
+     r <- (generate . elements) ["relefant", "extrem relefant", "nicht relefant", "irrelefant"]
+     sendMsg server chan r
    | otherwise = print msg
    where chan = fromJust $ mChan msg
          nick = fromJust $ mNick msg
