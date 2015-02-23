@@ -29,7 +29,7 @@ getOAuthTokens = do
             ]
     return (oauth, cred)
    where consumerKey = ""
-         consumerSecret  ""
+         consumerSecret = ""
          accessToken = ""
          accessSecret = ""
 
